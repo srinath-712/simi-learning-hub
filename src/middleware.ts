@@ -10,7 +10,12 @@ const PUBLIC_ROUTES = ['/', '/login', '/register', '/auth/callback']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
+
+  // Detect demo/preview mode — either explicitly set OR Supabase creds missing
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const hasRealSupabase = supabaseUrl && !supabaseUrl.includes('your_supabase') && supabaseAnonKey && !supabaseAnonKey.includes('your_supabase')
+  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false' || !hasRealSupabase
 
   // Always allow public routes
   if (PUBLIC_ROUTES.some(route => pathname === route)) {
@@ -33,17 +38,7 @@ export async function middleware(request: NextRequest) {
     request: { headers: request.headers },
   })
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    // Missing credentials and not in demo mode — redirect to login
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(loginUrl)
-  }
-
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+  const supabase = createServerClient(supabaseUrl!, supabaseAnonKey!, {
     cookies: {
       getAll() {
         return request.cookies.getAll()
@@ -72,17 +67,20 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // Check role-based access for tutor routes
+  // Check role-based access for dashboard routes (head AND approved tutors allowed)
   const isTutorRoute = TUTOR_ROUTES.some(route => pathname.startsWith(route))
   if (isTutorRoute) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, approval_status')
       .eq('id', user.id)
       .single()
 
-    if (profile?.role !== 'tutor') {
-      // Member trying to access tutor routes — redirect to /learn
+    const isHead = profile?.role === 'head'
+    const isApprovedTutor = profile?.role === 'tutor' && profile?.approval_status === 'approved'
+
+    if (!isHead && !isApprovedTutor) {
+      // Member or pending tutor trying to access dashboard — redirect to /learn
       const learnUrl = new URL('/learn', request.url)
       learnUrl.searchParams.set('alert', 'unauthorized')
       return NextResponse.redirect(learnUrl)
