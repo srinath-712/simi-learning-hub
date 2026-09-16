@@ -32,9 +32,9 @@ function LoginContent() {
     if (isAuthenticated) {
       const dest = canManageContent ? '/dashboard' : '/learn'
       const target = redirect && redirect !== '/login' && redirect.startsWith('/') ? redirect : dest
-      window.location.href = target
+      router.replace(target)
     }
-  }, [isAuthenticated, canManageContent, redirect])
+  }, [isAuthenticated, canManageContent, redirect, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,8 +56,8 @@ function LoginContent() {
 
     toast.success('Signed in successfully!')
     const dest = canManageContent ? '/dashboard' : '/learn'
-    const target = redirect && redirect !== '/login' ? redirect : dest
-    window.location.href = target
+    const target = redirect && redirect !== '/login' && redirect.startsWith('/') ? redirect : dest
+    router.push(target)
   }
 
   const handleGoogleSignIn = async () => {
@@ -69,7 +69,7 @@ function LoginContent() {
     const label = role === 'head' ? 'Head Admin' : role === 'tutor' ? 'Approved Tutor' : role === 'tutor_pending' ? 'Pending Tutor' : 'Student'
     toast.success(`Signed in as demo ${label}`)
     const dest = role === 'member' ? '/learn' : '/dashboard'
-    window.location.href = dest
+    router.push(dest)
   }
 
   return (
