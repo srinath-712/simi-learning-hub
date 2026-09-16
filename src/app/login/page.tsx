@@ -31,10 +31,10 @@ function LoginContent() {
   useEffect(() => {
     if (isAuthenticated) {
       const dest = canManageContent ? '/dashboard' : '/learn'
-      const target = redirect && redirect !== '/login' ? redirect : dest
-      router.push(target)
+      const target = redirect && redirect !== '/login' && redirect.startsWith('/') ? redirect : dest
+      window.location.href = target
     }
-  }, [isAuthenticated, canManageContent, redirect, router])
+  }, [isAuthenticated, canManageContent, redirect])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
