@@ -535,10 +535,12 @@ export const MOCK_DASHBOARD_STATS: DashboardStats = {
 
 /** Check if the app is running in demo mode */
 export function isDemoMode(): boolean {
-  if (typeof window === 'undefined') {
-    return process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const isPlaceholder = !url || url.includes('your_supabase') || url.includes('placeholder')
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'false' && !isPlaceholder) {
+    return false
   }
-  return process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
+  return true
 }
 
 /** Get mock content filtered by subject slug */
