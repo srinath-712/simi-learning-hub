@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Mail, Lock, LogIn, Chrome } from 'lucide-react'
@@ -11,7 +11,7 @@ import { isDemoMode } from '@/lib/mockData'
 import { useToast } from '@/components/ui/Toast'
 
 function LoginContent() {
-  const { signInWithEmail, signInWithGoogle, demoSignIn } = useAuth()
+  const { isAuthenticated, canManageContent, signInWithEmail, signInWithGoogle, demoSignIn } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const { toast } = useToast()
@@ -22,6 +22,12 @@ function LoginContent() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push(redirect || (canManageContent ? '/dashboard' : '/learn'))
+    }
+  }, [isAuthenticated, canManageContent, redirect, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
