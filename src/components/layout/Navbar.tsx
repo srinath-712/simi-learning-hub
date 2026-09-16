@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { Badge } from '@/components/ui/Badge'
 
 export function Navbar() {
-  const { profile, isAuthenticated, isTutor, signOut } = useAuth()
+  const { profile, isAuthenticated, canManageContent, signOut } = useAuth()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -22,7 +22,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href={isAuthenticated ? (isTutor ? '/dashboard' : '/learn') : '/'} className="flex items-center gap-2.5">
+          <Link href={isAuthenticated ? (canManageContent ? '/dashboard' : '/learn') : '/'} className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
               <BookOpen className="w-4.5 h-4.5 text-white" />
             </div>
@@ -35,7 +35,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-4">
             {isAuthenticated ? (
               <>
-                {isTutor ? (
+                {canManageContent && (
                   <Link
                     href="/dashboard"
                     className={`text-sm font-medium transition-colors ${
@@ -44,16 +44,15 @@ export function Navbar() {
                   >
                     Dashboard
                   </Link>
-                ) : (
-                  <Link
-                    href="/learn"
-                    className={`text-sm font-medium transition-colors ${
-                      pathname.startsWith('/learn') ? 'text-indigo-400' : 'text-gray-400 hover:text-gray-200'
-                    }`}
-                  >
-                    Learn
-                  </Link>
                 )}
+                <Link
+                  href="/learn"
+                  className={`text-sm font-medium transition-colors ${
+                    pathname.startsWith('/learn') ? 'text-indigo-400' : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  Learn
+                </Link>
 
                 {/* User menu */}
                 <div className="relative">
@@ -79,17 +78,7 @@ export function Navbar() {
                     <>
                       <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
                       <div className="absolute right-0 mt-2 w-48 rounded-xl bg-[#1a1a24] border border-white/10 shadow-xl z-20 py-1.5">
-                        {!isTutor && (
-                          <Link
-                            href="/account"
-                            onClick={() => setUserMenuOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
-                          >
-                            <User className="w-4 h-4" />
-                            Account
-                          </Link>
-                        )}
-                        {isTutor && (
+                        {canManageContent && (
                           <Link
                             href="/dashboard"
                             onClick={() => setUserMenuOpen(false)}
@@ -99,6 +88,14 @@ export function Navbar() {
                             Dashboard
                           </Link>
                         )}
+                        <Link
+                          href="/account"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
+                        >
+                          <User className="w-4 h-4" />
+                          Account
+                        </Link>
                         <button
                           onClick={() => {
                             setUserMenuOpen(false)
@@ -122,11 +119,8 @@ export function Navbar() {
                 >
                   Sign in
                 </Link>
-                <Link
-                  href="/register"
-                  className="px-4 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all duration-150 shadow-lg shadow-indigo-500/20"
-                >
-                  Sign up free
+                <Link href="/register">
+                  <Badge variant="info">Sign up free</Badge>
                 </Link>
               </>
             )}
@@ -159,7 +153,7 @@ export function Navbar() {
                   </div>
                 </div>
 
-                {isTutor ? (
+                {canManageContent && (
                   <Link
                     href="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
@@ -167,24 +161,21 @@ export function Navbar() {
                   >
                     Dashboard
                   </Link>
-                ) : (
-                  <>
-                    <Link
-                      href="/learn"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-3 py-2.5 text-sm text-gray-300 hover:bg-white/5 rounded-lg transition-colors"
-                    >
-                      Browse Subjects
-                    </Link>
-                    <Link
-                      href="/account"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-3 py-2.5 text-sm text-gray-300 hover:bg-white/5 rounded-lg transition-colors"
-                    >
-                      Account
-                    </Link>
-                  </>
                 )}
+                <Link
+                  href="/learn"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2.5 text-sm text-gray-300 hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  Browse Subjects
+                </Link>
+                <Link
+                  href="/account"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2.5 text-sm text-gray-300 hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  Account
+                </Link>
 
                 <button
                   onClick={() => {

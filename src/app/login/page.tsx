@@ -42,7 +42,7 @@ function LoginContent() {
     }
 
     toast.success('Signed in successfully!')
-    router.push(redirect || '/learn')
+    router.push(redirect || '/dashboard')
   }
 
   const handleGoogleSignIn = async () => {
