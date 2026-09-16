@@ -1,4 +1,5 @@
-export type UserRole = 'tutor' | 'member'
+export type UserRole = 'head' | 'tutor' | 'member'
+export type ApprovalStatus = 'approved' | 'pending' | 'rejected'
 export type ContentType = 'notes' | 'video' | 'youtube' | 'instagram'
 export type PaymentStatus = 'paid' | 'unpaid' | 'pending'
 
@@ -15,6 +16,7 @@ export interface Profile {
   email: string
   name: string | null
   role: UserRole
+  approval_status: ApprovalStatus
   plan_id: string | null
   plan?: Plan
   payment_status: PaymentStatus
