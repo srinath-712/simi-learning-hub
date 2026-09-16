@@ -540,6 +540,7 @@ export function isDemoMode(): boolean {
   if (process.env.NEXT_PUBLIC_DEMO_MODE === 'false' && !isPlaceholder) {
     return false
   }
+  // Default to true on Vercel / local if demo mode is not explicitly disabled with real keys
   return true
 }
 
