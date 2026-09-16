@@ -109,7 +109,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithEmail = useCallback(async (email: string, password: string): Promise<{ error: string | null }> => {
     if (demo) {
-      const profile = MOCK_MEMBER
+      let profile = MOCK_MEMBER
+      const lower = email.toLowerCase()
+      if (lower === 'simi2suns@gmail.com' || lower.includes('head') || lower.includes('admin')) {
+        profile = MOCK_HEAD
+      } else if (lower.includes('tutor')) {
+        profile = MOCK_TUTOR
+      } else {
+        profile = { ...MOCK_MEMBER, email }
+      }
       localStorage.setItem(DEMO_PROFILE_KEY, JSON.stringify(profile))
       setState(prev => ({ ...prev, profile }))
       return { error: null }

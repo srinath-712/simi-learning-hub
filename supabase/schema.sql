@@ -231,11 +231,50 @@ create policy "Head and Tutors delete storage" on storage.objects for delete usi
 );
 
 -- =============================================================================
--- INSTRUCTIONS FOR PROMOTING YOUR ACCOUNT TO HEAD ADMIN:
--- 1. Sign up your Head account via the app (/register).
--- 2. Run the SQL query below with your email:
---
--- UPDATE public.profiles
--- SET role = 'head', approval_status = 'approved'
--- WHERE email = 'your_head_email@example.com';
+-- HEAD ADMIN SEED ACCOUNT: simi2suns@gmail.com / password12345678
+-- Run this in Supabase SQL Editor (Dashboard → SQL → New Query)
 -- =============================================================================
+
+create extension if not exists "pgcrypto";
+
+DO $$
+DECLARE
+  new_user_id uuid := uuid_generate_v4();
+BEGIN
+  -- 1. Insert into auth.users if not already created
+  IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'simi2suns@gmail.com') THEN
+    INSERT INTO auth.users (
+      id,
+      instance_id,
+      email,
+      encrypted_password,
+      email_confirmed_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      created_at,
+      updated_at,
+      role,
+      aud
+    ) VALUES (
+      new_user_id,
+      '00000000-0000-0000-0000-000000000000',
+      'simi2suns@gmail.com',
+      crypt('password12345678', gen_salt('bf')),
+      now(),
+      '{"provider":"email","providers":["email"]}',
+      '{"name":"Head Admin"}',
+      now(),
+      now(),
+      'authenticated',
+      'authenticated'
+    );
+  END IF;
+
+  -- 2. Create or update profile as Head Admin
+  INSERT INTO public.profiles (id, email, name, role, approval_status, updated_at)
+  SELECT id, email, 'Head Admin', 'head', 'approved', now()
+  FROM auth.users
+  WHERE email = 'simi2suns@gmail.com'
+  ON CONFLICT (id) DO UPDATE 
+  SET role = 'head', approval_status = 'approved', name = 'Head Admin';
+END $$;

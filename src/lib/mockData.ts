@@ -14,7 +14,7 @@ export const MOCK_PLANS: Plan[] = [
 // ---------------------------------------------------------------------------
 export const MOCK_HEAD: Profile = {
   id: 'head-001',
-  email: 'head@similearninghub.com',
+  email: 'simi2suns@gmail.com',
   name: 'Head Admin',
   role: 'head',
   approval_status: 'approved',
