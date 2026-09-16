@@ -15,7 +15,12 @@ function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { toast } = useToast()
-  const redirect = searchParams.get('redirect') || ''
+
+  const rawRedirect = searchParams.get('redirect') || ''
+  const sanitizedRedirect = rawRedirect.replace(/^[^/]+/, '')
+  const redirect = (sanitizedRedirect.startsWith('/') && !sanitizedRedirect.startsWith('//'))
+    ? sanitizedRedirect
+    : (canManageContent ? '/dashboard' : '/learn')
   const demo = isDemoMode()
 
   const [email, setEmail] = useState('')
@@ -25,7 +30,9 @@ function LoginContent() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push(redirect || (canManageContent ? '/dashboard' : '/learn'))
+      const dest = canManageContent ? '/dashboard' : '/learn'
+      const target = redirect && redirect !== '/login' ? redirect : dest
+      router.push(target)
     }
   }, [isAuthenticated, canManageContent, redirect, router])
 
@@ -48,7 +55,9 @@ function LoginContent() {
     }
 
     toast.success('Signed in successfully!')
-    router.push(redirect || '/dashboard')
+    const dest = canManageContent ? '/dashboard' : '/learn'
+    const target = redirect && redirect !== '/login' ? redirect : dest
+    window.location.href = target
   }
 
   const handleGoogleSignIn = async () => {
@@ -59,7 +68,8 @@ function LoginContent() {
     demoSignIn(role)
     const label = role === 'head' ? 'Head Admin' : role === 'tutor' ? 'Approved Tutor' : role === 'tutor_pending' ? 'Pending Tutor' : 'Student'
     toast.success(`Signed in as demo ${label}`)
-    router.push(role === 'member' ? '/learn' : '/dashboard')
+    const dest = role === 'member' ? '/learn' : '/dashboard'
+    window.location.href = dest
   }
 
   return (
