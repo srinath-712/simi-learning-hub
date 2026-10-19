@@ -33,7 +33,6 @@ function LearnContent() {
     async function fetchSubjects() {
       if (demo) {
         if (isMounted) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
           setSubjects(MOCK_SUBJECTS)
           setLoading(false)
         }

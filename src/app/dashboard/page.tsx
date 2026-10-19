@@ -8,7 +8,7 @@ import { ContentUploadModal, type UploadFormData } from '@/components/content/Co
 import { useToast } from '@/components/ui/Toast'
 import { useAuth } from '@/context/AuthContext'
 import { isDemoMode, MOCK_DASHBOARD_STATS, MOCK_CONTENT, MOCK_SUBJECTS } from '@/lib/mockData'
-import { formatFileSize, generateStoragePath } from '@/lib/supabase/storage'
+import { formatFileSize } from '@/lib/supabase/storage'
 import type { DashboardStats, ContentItem, Subject } from '@/types'
 
 export default function DashboardOverviewPage() {
@@ -81,60 +81,14 @@ export default function DashboardOverviewPage() {
     }
 
     try {
-      const { createClient } = await import('@/lib/supabase/client')
-      const supabase = createClient()
-      const { uploadContentFile } = await import('@/lib/supabase/storage')
-
-      let fileUrl: string | null = null
-      let fileName: string | null = null
-      let filePath: string | null = null
-      let fileSize: number | null = null
-
-      // Create content record first to get ID for storage path
-      const { data: contentRecord, error: insertError } = await supabase
-        .from('content')
-        .insert({
-          subject_id: data.subjectId,
-          type: data.type,
-          title: data.title,
-          description: data.description || null,
-          external_url: data.externalUrl || null,
-          is_published: data.isPublished,
-          uploaded_by: profile?.id,
-        })
-        .select()
-        .single()
-
-      if (insertError || !contentRecord) {
-        throw new Error(insertError?.message || 'Failed to create content record.')
-      }
-
-      // Upload file if present
-      if (data.file && (data.type === 'notes' || data.type === 'video')) {
-        const bucket = data.type === 'notes' ? 'notes' as const : 'videos' as const
-        const storagePath = generateStoragePath(data.subjectId, contentRecord.id, data.file.name)
-
-        const result = await uploadContentFile(bucket, storagePath, data.file, () => {})
-
-        if ('error' in result) {
-          // Rollback the content record
-          await supabase.from('content').delete().eq('id', contentRecord.id)
-          throw new Error(result.error)
-        }
-
-        fileUrl = result.url
-        fileName = data.file.name
-        filePath = result.path
-        fileSize = data.file.size
-
-        // Update content record with file info
-        await supabase.from('content').update({
-          file_url: fileUrl,
-          file_name: fileName,
-          file_path: filePath,
-          file_size: fileSize,
-        }).eq('id', contentRecord.id)
-      }
+      const form = new FormData()
+      form.set('type', data.type); form.set('subjectId', data.subjectId); form.set('title', data.title)
+      form.set('description', data.description); form.set('isPublished', String(data.isPublished))
+      if (data.externalUrl) form.set('externalUrl', data.externalUrl)
+      if (data.file) form.set('file', data.file)
+      const response = await fetch('/api/content', { method: 'POST', body: form })
+      const result = await response.json() as { error?: string }
+      if (!response.ok) throw new Error(result.error || 'Upload failed.')
 
       toast.success(`"${data.title}" uploaded successfully!`)
       loadData()

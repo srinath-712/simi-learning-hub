@@ -13,7 +13,7 @@ import { YouTubeEmbed } from '@/components/content/YouTubeEmbed'
 import { useToast } from '@/components/ui/Toast'
 import { useAuth } from '@/context/AuthContext'
 import { isDemoMode, MOCK_CONTENT, MOCK_SUBJECTS } from '@/lib/mockData'
-import { generateStoragePath, deleteContentFile } from '@/lib/supabase/storage'
+import { deleteContentFile } from '@/lib/supabase/storage'
 import type { ContentItem, Subject } from '@/types'
 import { clsx } from 'clsx'
 
@@ -122,43 +122,14 @@ export default function ContentManagerPage() {
     }
 
     try {
-      const { createClient } = await import('@/lib/supabase/client')
-      const supabase = createClient()
-      const { uploadContentFile } = await import('@/lib/supabase/storage')
-
-      const { data: record, error: insertError } = await supabase
-        .from('content')
-        .insert({
-          subject_id: data.subjectId,
-          type: data.type,
-          title: data.title,
-          description: data.description || null,
-          external_url: data.externalUrl || null,
-          is_published: data.isPublished,
-          uploaded_by: profile?.id,
-        })
-        .select()
-        .single()
-
-      if (insertError || !record) throw new Error(insertError?.message || 'Failed to create record.')
-
-      if (data.file && (data.type === 'notes' || data.type === 'video')) {
-        const bucket = data.type === 'notes' ? 'notes' as const : 'videos' as const
-        const storagePath = generateStoragePath(data.subjectId, record.id, data.file.name)
-        const result = await uploadContentFile(bucket, storagePath, data.file, () => {})
-
-        if ('error' in result) {
-          await supabase.from('content').delete().eq('id', record.id)
-          throw new Error(result.error)
-        }
-
-        await supabase.from('content').update({
-          file_url: result.url,
-          file_name: data.file.name,
-          file_path: result.path,
-          file_size: data.file.size,
-        }).eq('id', record.id)
-      }
+      const form = new FormData()
+      form.set('type', data.type); form.set('subjectId', data.subjectId); form.set('title', data.title)
+      form.set('description', data.description); form.set('isPublished', String(data.isPublished))
+      if (data.externalUrl) form.set('externalUrl', data.externalUrl)
+      if (data.file) form.set('file', data.file)
+      const response = await fetch('/api/content', { method: 'POST', body: form })
+      const result = await response.json() as { error?: string }
+      if (!response.ok) throw new Error(result.error || 'Upload failed.')
 
       toast.success(`"${data.title}" uploaded successfully!`)
       loadData()

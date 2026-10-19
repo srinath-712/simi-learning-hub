@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { Search, ArrowLeft, BookOpen, Pin, Filter } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 import { Input } from '@/components/ui/Input'
 import { ContentCard } from '@/components/content/ContentCard'
 import { VideoPlayer } from '@/components/content/VideoPlayer'
@@ -26,6 +27,7 @@ export default function SubjectClassroomPage() {
   const params = useParams()
   const slug = params.subject as string
   const { toast } = useToast()
+  const { profile } = useAuth()
   const demo = isDemoMode()
 
   const [subject, setSubject] = useState<Subject | null>(null)
@@ -34,6 +36,7 @@ export default function SubjectClassroomPage() {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [viewContent, setViewContent] = useState<ContentItem | null>(null)
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set())
 
   const loadData = useCallback(async () => {
     if (demo) {
@@ -41,6 +44,7 @@ export default function SubjectClassroomPage() {
       const c = getMockContentBySubject(slug)
       setSubject(s || null)
       setContent(c)
+      if (profile?.id) setCompletedIds(new Set(JSON.parse(localStorage.getItem(`simi_progress_${profile.id}`) || '[]')))
       setLoading(false)
       return
     }
@@ -48,6 +52,11 @@ export default function SubjectClassroomPage() {
     try {
       const { createClient } = await import('@/lib/supabase/client')
       const supabase = createClient()
+
+      if (profile?.id) {
+        const { data: progress } = await supabase.from('member_progress').select('content_id').eq('user_id', profile.id)
+        setCompletedIds(new Set((progress || []).map(row => row.content_id)))
+      }
 
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
@@ -79,7 +88,25 @@ export default function SubjectClassroomPage() {
     } finally {
       setLoading(false)
     }
-  }, [demo, slug, toast])
+  }, [demo, slug, toast, profile])
+
+  const toggleComplete = async (item: ContentItem) => {
+    if (!profile) return
+    const next = new Set(completedIds)
+    const wasCompleted = next.has(item.id)
+    if (wasCompleted) next.delete(item.id); else next.add(item.id)
+    setCompletedIds(next)
+    if (demo) {
+      localStorage.setItem(`simi_progress_${profile.id}`, JSON.stringify([...next]))
+      return
+    }
+    const { createClient } = await import('@/lib/supabase/client')
+    const supabase = createClient()
+    const result = wasCompleted
+      ? await supabase.from('member_progress').delete().eq('user_id', profile.id).eq('content_id', item.id)
+      : await supabase.from('member_progress').upsert({ user_id: profile.id, content_id: item.id }, { onConflict: 'user_id,content_id' })
+    if (result.error) { setCompletedIds(completedIds); toast.error('Could not save lesson progress.') }
+  }
 
   useEffect(() => {
     let ignore = false
@@ -207,7 +234,7 @@ export default function SubjectClassroomPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             {pinnedItems.map((item) => (
-              <ContentCard key={item.id} content={item} onView={handleView} />
+              <ContentCard key={item.id} content={item} onView={handleView} completed={completedIds.has(item.id)} onToggleComplete={toggleComplete} />
             ))}
           </div>
         </div>
@@ -224,7 +251,7 @@ export default function SubjectClassroomPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {unpinnedItems.map((item) => (
-            <ContentCard key={item.id} content={item} onView={handleView} />
+            <ContentCard key={item.id} content={item} onView={handleView} completed={completedIds.has(item.id)} onToggleComplete={toggleComplete} />
           ))}
         </div>
       )}

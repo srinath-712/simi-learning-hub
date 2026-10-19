@@ -8,23 +8,34 @@ const TUTOR_ROUTES = ['/dashboard']
 // Routes that are always public
 const PUBLIC_ROUTES = ['/', '/login', '/register', '/auth/callback']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Detect demo/preview mode — either explicitly set OR Supabase creds missing
+  // Demo mode is an explicit, local-preview-only opt-in.
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  const hasRealSupabase = supabaseUrl && !supabaseUrl.includes('your_supabase') && supabaseAnonKey && !supabaseAnonKey.includes('your_supabase')
-  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false' || !hasRealSupabase
+  const hasRealSupabase = Boolean(
+    supabaseUrl &&
+    supabaseAnonKey &&
+    !supabaseUrl.includes('your_supabase') &&
+    !supabaseAnonKey.includes('your_supabase')
+  )
+  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
 
   // Always allow public routes
   if (PUBLIC_ROUTES.some(route => pathname === route)) {
     return NextResponse.next()
   }
 
-  // In demo mode, bypass Supabase session check — client-side AuthContext handles roles
+  // In explicit demo mode, bypass Supabase session checks for the local preview.
   if (demoMode) {
     return NextResponse.next()
+  }
+
+  // Never turn a misconfigured production deployment into an unauthenticated
+  // public app. Show a clear setup error instead.
+  if (!hasRealSupabase) {
+    return new NextResponse('Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.', { status: 503 })
   }
 
   // Check if route is protected

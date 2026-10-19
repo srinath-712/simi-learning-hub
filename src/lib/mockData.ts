@@ -535,13 +535,10 @@ export const MOCK_DASHBOARD_STATS: DashboardStats = {
 
 /** Check if the app is running in demo mode */
 export function isDemoMode(): boolean {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const isPlaceholder = !url || url.includes('your_supabase') || url.includes('placeholder')
-  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'false' && !isPlaceholder) {
-    return false
-  }
-  // Default to true on Vercel / local if demo mode is not explicitly disabled with real keys
-  return true
+  // Demo mode must always be an explicit opt-in. A missing or invalid
+  // Supabase configuration must fail closed instead of silently granting
+  // access to mock users.
+  return process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
 }
 
 /** Get mock content filtered by subject slug */

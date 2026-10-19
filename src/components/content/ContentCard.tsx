@@ -15,6 +15,8 @@ interface ContentCardProps {
   onTogglePublish?: (content: ContentItem) => void
   onTogglePin?: (content: ContentItem) => void
   isTutor?: boolean
+  completed?: boolean
+  onToggleComplete?: (content: ContentItem) => void
 }
 
 const typeIcons: Record<ContentType, typeof FileText> = {
@@ -39,6 +41,8 @@ export function ContentCard({
   onTogglePublish,
   onTogglePin,
   isTutor = false,
+  completed = false,
+  onToggleComplete,
 }: ContentCardProps) {
   const Icon = typeIcons[content.type]
 
@@ -135,6 +139,12 @@ export function ContentCard({
             <ActionIcon className="w-3.5 h-3.5" />
             {actionLabel}
           </button>
+
+          {!isTutor && onToggleComplete && (
+            <button onClick={() => onToggleComplete(content)} className={clsx('px-2 py-1.5 rounded-lg text-xs font-medium', completed ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-500 bg-white/5 hover:text-gray-300')}>
+              {completed ? 'Completed' : 'Mark complete'}
+            </button>
+          )}
 
           {isTutor && (
             <div className="flex items-center gap-1 ml-auto">

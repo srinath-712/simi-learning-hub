@@ -78,6 +78,8 @@ create table if not exists public.member_progress (
   completed_at timestamptz default now(),
   unique(user_id, content_id)
 );
+create index if not exists member_progress_user_id_idx on public.member_progress(user_id);
+create index if not exists member_progress_content_id_idx on public.member_progress(content_id);
 
 -- =============================================================================
 -- TRIGGERS & AUTOMATION
@@ -175,6 +177,8 @@ create policy "Head and Approved Tutors can manage subjects" on public.subjects 
     select 1 from public.profiles
     where id = auth.uid() and (role = 'head' or (role = 'tutor' and approval_status = 'approved'))
   )
+) with check (
+  exists (select 1 from public.profiles where id = auth.uid() and (role = 'head' or (role = 'tutor' and approval_status = 'approved')))
 );
 
 -- Content Policies (Videos, Notes, PDFs)
@@ -189,6 +193,8 @@ create policy "Head and Approved Tutors manage content" on public.content for al
     select 1 from public.profiles
     where id = auth.uid() and (role = 'head' or (role = 'tutor' and approval_status = 'approved'))
   )
+ ) with check (
+  exists (select 1 from public.profiles where id = auth.uid() and (role = 'head' or (role = 'tutor' and approval_status = 'approved')))
 );
 
 -- Plans Policies
@@ -197,7 +203,9 @@ create policy "Authenticated users view plans" on public.plans for select using 
 
 -- Member Progress Policies
 drop policy if exists "Users manage own progress" on public.member_progress;
-create policy "Users manage own progress" on public.member_progress for all using (auth.uid() = user_id);
+create policy "Users manage own progress" on public.member_progress for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 -- =============================================================================
 -- STORAGE BUCKETS (run in Supabase Dashboard → Storage → Buckets)
@@ -210,7 +218,9 @@ on conflict (id) do update set public = true;
 
 -- Storage Policies for 'notes' and 'videos' buckets
 drop policy if exists "Public access to notes" on storage.objects;
-create policy "Public access to notes" on storage.objects for select using (bucket_id = 'notes' or bucket_id = 'videos');
+create policy "Authenticated access to learning files" on storage.objects for select using (
+  (bucket_id = 'notes' or bucket_id = 'videos') and auth.role() = 'authenticated'
+);
 
 drop policy if exists "Head and Tutors upload storage" on storage.objects;
 create policy "Head and Tutors upload storage" on storage.objects for insert with check (
@@ -220,6 +230,13 @@ create policy "Head and Tutors upload storage" on storage.objects for insert wit
     where id = auth.uid() and (role = 'head' or (role = 'tutor' and approval_status = 'approved'))
   )
 );
+
+drop policy if exists "Head and Tutors update storage" on storage.objects;
+create policy "Head and Tutors update storage" on storage.objects for update using (
+  (bucket_id = 'notes' or bucket_id = 'videos') and exists (
+    select 1 from public.profiles where id = auth.uid() and (role = 'head' or (role = 'tutor' and approval_status = 'approved'))
+  )
+) with check (bucket_id = 'notes' or bucket_id = 'videos');
 
 drop policy if exists "Head and Tutors delete storage" on storage.objects;
 create policy "Head and Tutors delete storage" on storage.objects for delete using (
@@ -231,50 +248,12 @@ create policy "Head and Tutors delete storage" on storage.objects for delete usi
 );
 
 -- =============================================================================
--- HEAD ADMIN SEED ACCOUNT: simi2suns@gmail.com / password12345678
--- Run this in Supabase SQL Editor (Dashboard → SQL → New Query)
+-- Do not seed credentials in source-controlled SQL. Create the first admin
+-- through Supabase Auth, then promote that user's UUID with the guarded query
+-- below after signing in to the dashboard.
 -- =============================================================================
 
-create extension if not exists "pgcrypto";
-
-DO $$
-DECLARE
-  new_user_id uuid := uuid_generate_v4();
-BEGIN
-  -- 1. Insert into auth.users if not already created
-  IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'simi2suns@gmail.com') THEN
-    INSERT INTO auth.users (
-      id,
-      instance_id,
-      email,
-      encrypted_password,
-      email_confirmed_at,
-      raw_app_meta_data,
-      raw_user_meta_data,
-      created_at,
-      updated_at,
-      role,
-      aud
-    ) VALUES (
-      new_user_id,
-      '00000000-0000-0000-0000-000000000000',
-      'simi2suns@gmail.com',
-      crypt('password12345678', gen_salt('bf')),
-      now(),
-      '{"provider":"email","providers":["email"]}',
-      '{"name":"Head Admin"}',
-      now(),
-      now(),
-      'authenticated',
-      'authenticated'
-    );
-  END IF;
-
-  -- 2. Create or update profile as Head Admin
-  INSERT INTO public.profiles (id, email, name, role, approval_status, updated_at)
-  SELECT id, email, 'Head Admin', 'head', 'approved', now()
-  FROM auth.users
-  WHERE email = 'simi2suns@gmail.com'
-  ON CONFLICT (id) DO UPDATE 
-  SET role = 'head', approval_status = 'approved', name = 'Head Admin';
-END $$;
+-- Replace the UUID with the authenticated user's id:
+-- update public.profiles
+-- set role = 'head', approval_status = 'approved', updated_at = now()
+-- where id = '00000000-0000-0000-0000-000000000000';

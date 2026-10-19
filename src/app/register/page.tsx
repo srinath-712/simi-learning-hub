@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input'
 import { useToast } from '@/components/ui/Toast'
 import type { UserRole } from '@/types'
 import { clsx } from 'clsx'
+import { validateAuthInput } from '@/lib/validation'
 
 export default function RegisterPage() {
   const { signUpWithEmail } = useAuth()
@@ -32,8 +33,9 @@ export default function RegisterPage() {
       return
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+    const validationError = validateAuthInput(email, password, name)
+    if (validationError) {
+      setError(validationError)
       return
     }
 

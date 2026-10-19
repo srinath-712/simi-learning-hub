@@ -30,6 +30,7 @@ export default function SubjectManagerPage() {
   const demo = isDemoMode()
 
   const [subjects, setSubjects] = useState<Subject[]>([])
+  const [contentCounts, setContentCounts] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null)
@@ -55,6 +56,15 @@ export default function SubjectManagerPage() {
       const { data, error } = await supabase.from('subjects').select('*').order('order_index')
       if (error) throw error
       setSubjects((data || []) as Subject[])
+      const { data: content, error: contentError } = await supabase
+        .from('content')
+        .select('subject_id')
+        .eq('is_published', true)
+      if (contentError) throw contentError
+      setContentCounts((content || []).reduce<Record<string, number>>((counts, item) => {
+        counts[item.subject_id] = (counts[item.subject_id] || 0) + 1
+        return counts
+      }, {}))
     } catch (err) {
       console.error('[subjects] Load error:', err)
       toast.error('Failed to load subjects.')
@@ -207,7 +217,7 @@ export default function SubjectManagerPage() {
   // Get content count per subject
   const getContentCount = (subjectId: string): number => {
     if (demo) return MOCK_CONTENT.filter(c => c.subject_id === subjectId).length
-    return 0
+    return contentCounts[subjectId] || 0
   }
 
   if (loading) {

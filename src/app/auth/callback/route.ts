@@ -60,6 +60,6 @@ export async function GET(request: NextRequest) {
     .single()
 
   // Route based on role: tutors → dashboard, members → learn
-  const destination = profile?.role === 'tutor' ? '/dashboard' : '/learn'
+  const destination = profile?.role === 'head' || profile?.role === 'tutor' ? '/dashboard' : '/learn'
   return NextResponse.redirect(`${origin}${destination}`)
 }

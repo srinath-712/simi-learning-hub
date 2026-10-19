@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { isDemoMode } from '@/lib/mockData'
 import { useToast } from '@/components/ui/Toast'
+import { validateAuthInput } from '@/lib/validation'
 
 function LoginContent() {
   const { isAuthenticated, canManageContent, signInWithEmail, signInWithGoogle, demoSignIn } = useAuth()
@@ -38,8 +39,9 @@ function LoginContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !password) {
-      setError('Please fill in all fields.')
+    const validationError = validateAuthInput(email, password)
+    if (validationError) {
+      setError(validationError)
       return
     }
 
@@ -55,8 +57,9 @@ function LoginContent() {
     }
 
     toast.success('Signed in successfully!')
-    const dest = canManageContent ? '/dashboard' : '/learn'
-    const target = redirect && redirect !== '/login' && redirect.startsWith('/') ? redirect : dest
+    const target = redirect && redirect !== '/login' && redirect.startsWith('/')
+      ? redirect
+      : (email.toLowerCase().includes('tutor') || email.toLowerCase().includes('admin') ? '/dashboard' : '/learn')
     router.push(target)
   }
 

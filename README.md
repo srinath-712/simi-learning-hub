@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Simi Learning Hub
 
-## Getting Started
+Simi Learning Hub is a Next.js learning-management app backed by Supabase. Head admins approve tutors and manage users; approved tutors manage subjects and lessons; members browse published lessons.
 
-First, run the development server:
+## Local setup
+
+Requirements: Node.js 20+ and npm.
 
 ```bash
+npm ci
+copy .env.example .env.local   # Windows
+# cp .env.example .env.local   # macOS/Linux
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local` for real authentication and persistence. For a UI-only preview, set `NEXT_PUBLIC_DEMO_MODE=true`; demo data is not persistent and must not be used in production.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Supabase setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a Supabase project.
+2. Run `supabase/schema.sql` in the Supabase SQL editor.
+3. Configure email auth and the Google provider if Google sign-in is required.
+4. Add the deployed `/auth/callback` URL to the Supabase OAuth redirect allowlist.
+5. Create the first user through Supabase Auth, then promote that user's profile to `head` using a controlled admin-only SQL operation. Do not commit passwords or service-role keys.
 
-## Learn More
+## Checks
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+npm run typecheck
+npm run build
+# or: make test
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Production deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Deploy the app to a Node-compatible host such as Vercel. Configure the two Supabase public variables and set `NEXT_PUBLIC_DEMO_MODE=false`. Never expose a Supabase service-role key in browser variables.
 
-## Deploy on Vercel
+### Docker
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+docker build -t simi-learning-hub .
+docker run --rm -p 3000:3000 --env-file .env.local simi-learning-hub
+```
