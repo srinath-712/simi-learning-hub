@@ -48,7 +48,7 @@ function LearnContent() {
           .select('*')
           .order('order_index')
 
-        if (subjectsError) throw subjectsError
+        if (subjectsError) throw new Error(`Subjects: ${subjectsError.message}`)
 
         // Fetch content counts per subject
         const { data: contentData } = await supabase
@@ -73,7 +73,7 @@ function LearnContent() {
         if (isMounted) setSubjects(subjectsWithCounts)
       } catch (err) {
         console.error('[learn] Load error:', err)
-        toast.error('Failed to load subjects.')
+        toast.error(err instanceof Error ? err.message : 'Failed to load subjects.')
       } finally {
         if (isMounted) setLoading(false)
       }
