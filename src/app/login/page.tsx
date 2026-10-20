@@ -76,19 +76,19 @@ function LoginContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f13] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-600/20">
             <LogIn className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Welcome back</h1>
-          <p className="text-sm text-gray-500 mt-1.5">Sign in to your Simi Learning Hub account</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
+          <p className="text-sm text-slate-500 mt-1.5">Sign in to your Simi Learning Hub account</p>
         </div>
 
         {/* Form card */}
-        <div className="bg-[#1a1a24] rounded-xl border border-white/[0.06] p-6 space-y-5">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-5 shadow-sm">
           {/* Google OAuth */}
           {!demo && (
             <>
@@ -103,10 +103,10 @@ function LoginContent() {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/10" />
+                  <div className="w-full border-t border-slate-200" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="bg-[#1a1a24] px-3 text-gray-600">or continue with email</span>
+                  <span className="bg-white px-3 text-slate-400">or continue with email</span>
                 </div>
               </div>
             </>
@@ -134,7 +134,7 @@ function LoginContent() {
             />
 
             {error && (
-              <p className="text-sm text-red-400">{error}</p>
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
             )}
 
             <Button type="submit" className="w-full" loading={loading}>
@@ -147,10 +147,10 @@ function LoginContent() {
             <>
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/10" />
+                  <div className="w-full border-t border-slate-200" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="bg-[#1a1a24] px-3 text-gray-600">or try demo mode</span>
+                  <span className="bg-white px-3 text-slate-400">or try demo mode</span>
                 </div>
               </div>
 
@@ -193,9 +193,9 @@ function LoginContent() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-600 mt-6">
+         <p className="text-center text-sm text-slate-500 mt-6">
           Don&apos;t have an account?{' '}
-          <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+           <Link href="/register" className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
             Sign up free
           </Link>
         </p>

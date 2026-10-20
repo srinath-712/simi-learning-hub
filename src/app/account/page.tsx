@@ -76,54 +76,54 @@ export default function AccountPage() {
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Account</h1>
-        <p className="text-sm text-gray-500 mt-1">Manage your profile and password</p>
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Account</h1>
+        <p className="text-sm text-slate-500 mt-1">Manage your profile and password</p>
       </div>
 
       {/* Profile card */}
-      <div className="bg-[#1a1a24] rounded-xl border border-white/[0.06] p-6">
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
         <div className="flex items-center gap-5 mb-6">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white shrink-0">
+          <div className="w-16 h-16 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-bold shrink-0">
             {initials}
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">{profile?.name || 'User'}</h2>
-            <p className="text-sm text-gray-500">{profile?.email}</p>
+            <h2 className="text-lg font-semibold text-slate-900">{profile?.name || 'User'}</h2>
+            <p className="text-sm text-slate-500">{profile?.email}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-lg">
-            <Mail className="w-4 h-4 text-gray-500" />
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+            <Mail className="w-4 h-4 text-slate-500" />
             <div>
-              <p className="text-xs text-gray-600">Email</p>
-              <p className="text-sm text-gray-300">{profile?.email}</p>
+              <p className="text-xs text-slate-500">Email</p>
+              <p className="text-sm text-slate-700">{profile?.email}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-lg">
-            <Shield className="w-4 h-4 text-gray-500" />
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+            <Shield className="w-4 h-4 text-slate-500" />
             <div>
-              <p className="text-xs text-gray-600">Plan</p>
+              <p className="text-xs text-slate-500">Plan</p>
               <Badge variant="info">{profile?.plan?.name || 'Free'}</Badge>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-lg">
-            <CreditCard className="w-4 h-4 text-gray-500" />
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+            <CreditCard className="w-4 h-4 text-slate-500" />
             <div>
-              <p className="text-xs text-gray-600">Payment status</p>
+              <p className="text-xs text-slate-500">Payment status</p>
               <Badge variant={getPaymentBadgeVariant(profile?.payment_status || 'paid')} dot>
                 {profile?.payment_status ? profile.payment_status.charAt(0).toUpperCase() + profile.payment_status.slice(1) : 'Paid'}
               </Badge>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-lg">
-            <Calendar className="w-4 h-4 text-gray-500" />
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+            <Calendar className="w-4 h-4 text-slate-500" />
             <div>
-              <p className="text-xs text-gray-600">Member since</p>
-              <p className="text-sm text-gray-300">
+              <p className="text-xs text-slate-500">Member since</p>
+              <p className="text-sm text-slate-700">
                 {profile?.created_at
                   ? new Date(profile.created_at).toLocaleDateString('en-IN', {
                       day: 'numeric',
@@ -138,10 +138,10 @@ export default function AccountPage() {
       </div>
 
       {/* Change password */}
-      <div className="bg-[#1a1a24] rounded-xl border border-white/[0.06] p-6">
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-5">
-          <Lock className="w-5 h-5 text-gray-400" />
-          <h2 className="text-base font-semibold text-white">Change Password</h2>
+          <Lock className="w-5 h-5 text-slate-500" />
+          <h2 className="text-base font-semibold text-slate-900">Change Password</h2>
         </div>
 
         <form onSubmit={handlePasswordChange} className="space-y-4">

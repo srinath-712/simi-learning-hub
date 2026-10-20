@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ClientProviders } from "./providers";
 
@@ -14,6 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
 });
+const jakarta = Plus_Jakarta_Sans({ variable: "--font-jakarta", subsets: ["latin"], display: "swap", weight: ["600", "700", "800"] });
 
 export const metadata: Metadata = {
   title: "Simi Learning Hub — Learn Smarter",
@@ -30,9 +31,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${jakarta.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#0f0f13] text-gray-100 font-[family-name:var(--font-inter)]">
+      <body className="min-h-full flex flex-col bg-[#f8fafc] text-[#0f172a] font-[family-name:var(--font-inter)]">
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>

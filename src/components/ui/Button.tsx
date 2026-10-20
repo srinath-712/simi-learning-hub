@@ -14,10 +14,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-lg shadow-indigo-500/20',
-  secondary: 'bg-transparent border border-white/10 hover:border-white/20 hover:bg-white/5 text-gray-200',
-  ghost: 'bg-transparent hover:bg-white/5 text-gray-300',
-  danger: 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20',
+  primary: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-600/20',
+  secondary: 'bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700',
+  ghost: 'bg-transparent hover:bg-slate-100 text-slate-600',
+  danger: 'bg-red-600 hover:bg-red-700 text-white',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -34,7 +34,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={twMerge(
           clsx(
             'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 ease-out',
-            'focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:ring-offset-2 focus:ring-offset-[#0f0f13]',
+            'focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2 focus:ring-offset-white',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             variantStyles[variant],
             sizeStyles[size],

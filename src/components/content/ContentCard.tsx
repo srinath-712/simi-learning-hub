@@ -67,10 +67,10 @@ export function ContentCard({
   return (
     <div
       className={clsx(
-        'group relative bg-[#1a1a24] rounded-xl border transition-all duration-150 hover:border-white/15 hover:shadow-lg',
+        'group relative bg-white rounded-2xl border transition-all duration-150 hover:border-indigo-200 hover:shadow-lg',
         content.is_pinned
-          ? 'border-l-2 border-l-amber-500 border-t-white/[0.06] border-r-white/[0.06] border-b-white/[0.06]'
-          : 'border-white/[0.06]',
+          ? 'border-l-2 border-l-amber-500 border-t-slate-200 border-r-slate-200 border-b-slate-200'
+          : 'border-slate-200',
         !content.is_published && isTutor && 'opacity-70'
       )}
     >
@@ -107,17 +107,17 @@ export function ContentCard({
         </div>
 
         {/* Title and description */}
-        <h3 className="text-sm font-semibold text-white mb-1.5 line-clamp-2">
+          <h3 className="text-sm font-semibold text-slate-900 mb-1.5 line-clamp-2">
           {content.title}
         </h3>
         {content.description && (
-          <p className="text-xs text-gray-500 mb-3 line-clamp-2">
+          <p className="text-xs text-slate-500 mb-3 line-clamp-2">
             {content.description}
           </p>
         )}
 
         {/* Meta info */}
-        <div className="flex items-center gap-3 text-xs text-gray-600 mb-4">
+        <div className="flex items-center gap-3 text-xs text-slate-500 mb-4">
           {content.file_size && (
             <span className="font-mono">{formatFileSize(content.file_size)}</span>
           )}

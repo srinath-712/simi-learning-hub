@@ -65,22 +65,22 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f13] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-600/20">
             <UserPlus className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Create your account</h1>
-          <p className="text-sm text-gray-500 mt-1.5">Join Simi Learning Hub to start learning or teaching</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Create your account</h1>
+          <p className="text-sm text-slate-500 mt-1.5">Join Simi Learning Hub to start learning or teaching</p>
         </div>
 
         {/* Form card */}
-        <div className="bg-[#1a1a24] rounded-xl border border-white/[0.06] p-6 space-y-5">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-5 shadow-sm">
           {/* Account Type Selector */}
           <div>
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
               Account Type
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -90,8 +90,8 @@ export default function RegisterPage() {
                 className={clsx(
                   'flex items-center gap-2.5 p-3 rounded-lg border text-left transition-all duration-150',
                   role === 'member'
-                    ? 'bg-indigo-500/10 border-indigo-500 text-white'
-                    : 'bg-[#0f0f13] border-white/10 text-gray-400 hover:border-white/20'
+                     ? 'bg-indigo-50 border-indigo-500 text-slate-900'
+                     : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                 )}
               >
                 <BookOpen className={clsx('w-4 h-4', role === 'member' ? 'text-indigo-400' : 'text-gray-500')} />
@@ -107,8 +107,8 @@ export default function RegisterPage() {
                 className={clsx(
                   'flex items-center gap-2.5 p-3 rounded-lg border text-left transition-all duration-150',
                   role === 'tutor'
-                    ? 'bg-purple-500/10 border-purple-500 text-white'
-                    : 'bg-[#0f0f13] border-white/10 text-gray-400 hover:border-white/20'
+                     ? 'bg-violet-50 border-violet-500 text-slate-900'
+                     : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                 )}
               >
                 <GraduationCap className={clsx('w-4 h-4', role === 'tutor' ? 'text-purple-400' : 'text-gray-500')} />
@@ -120,7 +120,7 @@ export default function RegisterPage() {
             </div>
 
             {role === 'tutor' && (
-              <div className="mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
+               <div className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-start gap-2">
                 <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <span>
                   Tutor applications require approval from the Head Admin before you can create courses and upload content.
@@ -167,7 +167,7 @@ export default function RegisterPage() {
             />
 
             {error && (
-              <p className="text-sm text-red-400">{error}</p>
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
             )}
 
             <Button type="submit" className="w-full" loading={loading}>
@@ -177,9 +177,9 @@ export default function RegisterPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-600 mt-6">
+         <p className="text-center text-sm text-slate-500 mt-6">
           Already have an account?{' '}
-          <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+           <Link href="/login" className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
             Sign in
           </Link>
         </p>

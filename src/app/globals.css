@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #0f0f13;
-  --color-foreground: #f8f8ff;
+  --color-background: #f8fafc;
+  --color-foreground: #0f172a;
   --font-sans: var(--font-inter);
   --font-mono: var(--font-mono);
 }
 
 /* Base styles */
 body {
-  background: #0f0f13;
-  color: #f8f8ff;
+  background: #f8fafc;
+  color: #0f172a;
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
@@ -25,18 +25,18 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: #cbd5e1;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #94a3b8;
 }
 
 /* Selection */
 ::selection {
-  background: rgba(99, 102, 241, 0.3);
-  color: #f8f8ff;
+  background: #c7d2fe;
+  color: #1e1b4b;
 }
 
 /* Animations */
@@ -89,6 +89,20 @@ body {
 
 /* Fix for select elements in dark mode */
 select option {
-  background: #1a1a24;
-  color: #f8f8ff;
+  background: #ffffff;
+  color: #0f172a;
 }
+
+h1, h2, h3, h4 { font-family: var(--font-jakarta), var(--font-inter), sans-serif; }
+
+/* Legacy dashboard surfaces are normalized here while page modules are being
+   migrated to the shared academic design tokens. */
+[class*="bg-[#1a1a24]"] { background-color: #ffffff !important; }
+[class*="bg-[#0f0f13]"] { background-color: #f8fafc !important; }
+[class*="border-white"] { border-color: #e2e8f0 !important; }
+[class*="hover:bg-white"]:hover { background-color: #f8fafc !important; }
+[class*="text-gray-500"] { color: #64748b !important; }
+[class*="text-gray-600"] { color: #94a3b8 !important; }
+[class*="text-gray-300"] { color: #475569 !important; }
+[class*="text-gray-200"] { color: #334155 !important; }
+[class*="text-gray-400"] { color: #64748b !important; }

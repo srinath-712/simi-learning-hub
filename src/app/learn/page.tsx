@@ -102,13 +102,13 @@ function LearnContent() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
           Welcome back, {profile?.name?.split(' ')[0] || 'Student'} 👋
         </h1>
-        <p className="text-sm text-gray-500 mt-1">Browse subjects and start learning</p>
+        <p className="text-sm text-slate-500 mt-1">Browse subjects and start learning</p>
       </div>
 
       {/* Search */}
@@ -123,9 +123,9 @@ function LearnContent() {
 
       {/* Subject cards */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16">
-          <BookOpen className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-          <p className="text-sm text-gray-500">
+        <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl">
+          <BookOpen className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+          <p className="text-sm text-slate-500">
             {subjects.length === 0 ? 'No subjects available yet. Check back soon!' : 'No subjects match your search'}
           </p>
         </div>
@@ -139,7 +139,7 @@ function LearnContent() {
               <Link
                 key={subject.id}
                 href={`/learn/${subject.slug}`}
-                className="group bg-[#1a1a24] rounded-xl border border-white/[0.06] p-6 hover:border-white/15 hover:shadow-xl transition-all duration-200"
+                className="group bg-white rounded-2xl border border-slate-200 p-6 hover:border-indigo-200 hover:shadow-lg transition-all duration-200"
               >
                 {/* Subject icon */}
                 <div
@@ -150,39 +150,39 @@ function LearnContent() {
                 </div>
 
                 {/* Title */}
-                <h2 className="text-lg font-semibold text-white mb-1 group-hover:text-indigo-400 transition-colors">
+                <h2 className="text-lg font-semibold text-slate-900 mb-1 group-hover:text-indigo-600 transition-colors">
                   {subject.name}
                 </h2>
 
                 {/* Description */}
                 {subject.description && (
-                  <p className="text-xs text-gray-500 mb-4 line-clamp-2">{subject.description}</p>
+                  <p className="text-xs text-slate-500 mb-4 line-clamp-2">{subject.description}</p>
                 )}
 
                 {/* Content breakdown */}
                 <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-300 mb-2">
+                    <p className="text-sm font-medium text-slate-700 mb-2">
                     {total} {total === 1 ? 'Lesson' : 'Lessons'}
                   </p>
                   {breakdown && total > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {breakdown.notes > 0 && (
-                        <span className="inline-flex items-center gap-1 text-xs text-blue-400">
+                        <span className="inline-flex items-center gap-1 text-xs text-blue-700">
                           <FileText className="w-3 h-3" /> {breakdown.notes} Notes
                         </span>
                       )}
                       {breakdown.video > 0 && (
-                        <span className="inline-flex items-center gap-1 text-xs text-purple-400">
+                        <span className="inline-flex items-center gap-1 text-xs text-violet-700">
                           <Video className="w-3 h-3" /> {breakdown.video} Videos
                         </span>
                       )}
                       {breakdown.youtube > 0 && (
-                        <span className="inline-flex items-center gap-1 text-xs text-red-400">
+                        <span className="inline-flex items-center gap-1 text-xs text-red-700">
                           <Youtube className="w-3 h-3" /> {breakdown.youtube} YouTube
                         </span>
                       )}
                       {breakdown.instagram > 0 && (
-                        <span className="inline-flex items-center gap-1 text-xs text-pink-400">
+                        <span className="inline-flex items-center gap-1 text-xs text-pink-700">
                           <Instagram className="w-3 h-3" /> {breakdown.instagram} Instagram
                         </span>
                       )}
@@ -191,7 +191,7 @@ function LearnContent() {
                 </div>
 
                 {/* CTA */}
-                <div className="flex items-center text-sm font-medium text-indigo-400 group-hover:text-indigo-300 transition-colors">
+                <div className="flex items-center text-sm font-semibold text-indigo-600 group-hover:text-indigo-700 transition-colors">
                   Start learning
                   <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                 </div>

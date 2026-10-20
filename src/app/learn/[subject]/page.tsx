@@ -189,11 +189,11 @@ export default function SubjectClassroomPage() {
           <BookOpen className="w-7 h-7" style={{ color: subject.color_theme }} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">{subject.name}</h1>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{subject.name}</h1>
           {subject.description && (
-            <p className="text-sm text-gray-500 mt-1">{subject.description}</p>
+            <p className="text-sm text-slate-500 mt-1">{subject.description}</p>
           )}
-          <p className="text-xs text-gray-600 mt-2">{content.length} {content.length === 1 ? 'lesson' : 'lessons'}</p>
+          <p className="text-xs text-slate-500 mt-2">{content.length} {content.length === 1 ? 'lesson' : 'lessons'}</p>
         </div>
       </div>
 
